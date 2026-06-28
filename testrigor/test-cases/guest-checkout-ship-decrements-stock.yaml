@@ -1,0 +1,60 @@
+customSteps: |
+  // ── Scenario 2 ─────────────────────────────────────────────────────────
+  // Full guest checkout, then verify the back office shows the order needing
+  // fulfillment ("must be shipped"), and that marking it Shipped leaves the
+  // product's available stock lower than before the sale. Proves the whole
+  // buy -> notify owner -> fulfill -> inventory loop.
+  //
+  // checkoutProductName must be a seeded, ACTIVE, in-stock product.
+
+  // --- Baseline: record available stock from the product editor ---
+  admin-login
+  click "Products"
+  click stored value "checkoutProductName"
+  grab value from "Stock" and save it as "stockBefore"
+  logout
+
+  // --- Guest finds the product and buys it ---
+  reset to home
+  enter stored value "checkoutProductName" into "Search"
+  enter enter into "Search"
+  click stored value "checkoutProductName"
+  check that page contains stored value from "checkoutProductName"
+  click "Add to Cart"
+  check that "Cart" contains "1"
+
+  click "Cart"
+  click "Proceed to Checkout"
+
+  // Unique buyer email so a real mailbox exists for this run
+  generate unique email, then enter into "Email address" and save as "guestEmail"
+  fill-checkout-shipping-and-payment
+  click "Place Order"
+
+  // Consequence of a successful order (exact phrase + order number format)
+  check that page contains "Thank you for your purchase!"
+  grab value of "ORD-\d{4}-\d{6}" and save it as "orderNumber"
+  check that page contains stored value from "orderNumber"
+
+  // --- Back office: the order is queued as needing fulfillment ---
+  admin-login
+  click "Orders"
+  check that page contains stored value from "orderNumber"
+  // Paid + not yet shipped == "this product must be shipped"
+  check that page contains "Paid"
+  click stored value "orderNumber"
+
+  // --- Fulfill: set carrier + tracking, move to Shipped ---
+  enter stored value "carrier" into "Carrier"
+  enter stored value "trackingNumber" into "Tracking Number"
+  select "Shipped" from "Update Status"
+  click "Save"
+  check that page contains "Shipped"
+
+  // --- Inventory: available stock has decreased by the 1 unit sold ---
+  click "Products"
+  click stored value "checkoutProductName"
+  grab value from "Stock" and save it as "stockAfter"
+  save expression "${stockBefore} - ${stockAfter}" as "stockDelta"
+  check that stored value "stockDelta" itself contains "1"
+labels: [smoke, checkout, admin, fulfillment]

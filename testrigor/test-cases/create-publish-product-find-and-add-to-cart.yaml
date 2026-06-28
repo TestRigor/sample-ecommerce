@@ -1,0 +1,48 @@
+customSteps: |
+  // ── Scenario 1 ─────────────────────────────────────────────────────────
+  // Owner creates a product in the back office and publishes it (active),
+  // then an UNAUTHENTICATED shopper finds it via the top search bar and adds
+  // it to the cart. Proves: catalog create + publish -> storefront visibility
+  // -> search -> add to cart.
+
+  // --- Back office: create + publish the product ---
+  admin-login
+  click "Products"
+  check that page contains "Products"
+  click "New Product"
+
+  // Unique name so the search later resolves to exactly THIS product
+  generate unique name, then enter into "Name" and save as "productName"
+  generate from regex "[a-z]{10,16}", then enter into "Slug" and save as "productSlug"
+  enter stored value "newProductDescription" into "Description"
+  enter stored value "newProductPrice" into "Price"
+  enter stored value "newProductImageUrl" into "Image URL"
+  enter stored value "newProductStock" into "Stock"
+  select stored value "newProductCategory" from "Category"
+
+  // Publish: toggle the Active flag on so it shows on the storefront
+  click "Active"
+  click "Save"
+  check that page contains stored value from "productName"
+
+  // Drop the owner session so the shopper is truly anonymous
+  logout
+
+  // --- Storefront: anonymous shopper finds it via the top search bar ---
+  reset to home
+  enter stored value "productName" into "Search"
+  enter enter into "Search"
+
+  // Results page echoes the query (stable caption) and lists our product
+  check that page contains string with parameters "Results for \"${productName}\""
+  check that page contains stored value from "productName"
+
+  // Open the PDP and add to cart
+  click stored value "productName"
+  check that page contains stored value from "productName"
+  check that page contains "Add to Cart"
+  click "Add to Cart"
+
+  // Consequence: cart count reflects the added item
+  check that "Cart" contains "1"
+labels: [smoke, admin, search, cart]

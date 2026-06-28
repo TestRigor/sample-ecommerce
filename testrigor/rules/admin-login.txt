@@ -1,0 +1,11 @@
+// Reusable rule: admin-login
+// Signs in to the back office as the store owner (role = ADMIN).
+// Navigate within the app (no hard-coded host) by clicking the header "Admin"
+// link from the storefront, so the same rule runs against localhost, a Vercel
+// preview, or prod (see write-tests rule #7).
+reset to home
+click "Admin"
+enter stored value "adminEmail" into "Email address"
+enter stored value "adminPassword" into "Password"
+click "Sign in"
+check that page contains "Dashboard"

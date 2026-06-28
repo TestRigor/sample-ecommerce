@@ -1,0 +1,25 @@
+// Reusable rule: fill-checkout-shipping-and-payment
+// Fills the shipping address, copies it to billing via "Same as shipping",
+// and enters the mock approved test card. The caller is responsible for the
+// Email address field (so it can generate/capture a unique buyer email first)
+// and for clicking "Place Order".
+// Field labels are the stable captions from spec section 13.3. The two
+// "Full Name" fields (shipping vs. card) are disambiguated by the unique
+// field each one sits directly above.
+
+// Shipping address
+enter stored value "shipFullName" into "Full Name" above "Address line 1"
+enter stored value "shipLine1" into "Address line 1"
+enter stored value "shipCity" into "City"
+enter stored value "shipState" into "State"
+enter stored value "shipPostal" into "Postal code"
+select stored value "shipCountry" from "Country"
+
+// Billing = shipping
+click "Same as shipping"
+
+// Payment — mock provider approves the 4111… test card
+enter stored value "cardName" into "Full Name" above "Credit Card"
+enter stored value "cardNumber" into "Credit Card"
+enter stored value "cardExpiration" into "Expiration"
+enter stored value "cardCrc" into "CRC"

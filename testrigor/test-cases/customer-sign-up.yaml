@@ -1,0 +1,23 @@
+customSteps: |
+  // ── Scenario 3 ─────────────────────────────────────────────────────────
+  // A new visitor signs up for a customer account. Proves registration
+  // creates the account (lands signed-in on the account area) and triggers
+  // the welcome email.
+
+  reset to home
+  click "Account"
+  click "Register"
+
+  // Unique email so the account is new and its mailbox is checkable
+  generate unique email, then enter into "Email address" and save as "newCustomerEmail"
+  enter stored value "newCustomerName" into "Full Name"
+  enter stored value "newCustomerPassword" into "Password"
+  click "Create account"
+
+  // Consequence: signed in on the account area
+  check that page contains "My Account"
+
+  // Welcome email (spec section 9). Remove this line if the welcome email
+  // is not enabled in the environment under test.
+  check that email to stored value "newCustomerEmail" was received
+labels: [smoke, account]

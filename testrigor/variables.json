@@ -1,0 +1,30 @@
+{
+  "adminEmail": "owner@example.com",
+  "adminPassword": "change-me-admin-password",
+
+  "newProductDescription": "A premium QA demo product created by the automated back-office test.",
+  "newProductPrice": "49.99",
+  "newProductImageUrl": "https://picsum.photos/seed/qa-demo/600/600",
+  "newProductStock": "25",
+  "newProductCategory": "Electronics",
+
+  "checkoutProductName": "Wireless Mouse",
+
+  "shipFullName": "Pat Quality",
+  "shipLine1": "123 Test Street",
+  "shipCity": "Springfield",
+  "shipState": "IL",
+  "shipPostal": "62704",
+  "shipCountry": "United States",
+
+  "cardName": "Pat Quality",
+  "cardNumber": "4111 1111 1111 1111",
+  "cardExpiration": "12/29",
+  "cardCrc": "123",
+
+  "carrier": "UPS",
+  "trackingNumber": "1Z999AA10123456784",
+
+  "newCustomerName": "Sam Shopper",
+  "newCustomerPassword": "Sup3rSecret!23"
+}

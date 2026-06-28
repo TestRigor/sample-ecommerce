@@ -77,6 +77,15 @@ web_modules/
 # Next.js build output
 .next
 out
+next-env.d.ts
+
+# Prisma SQLite db
+*.db
+*.db-journal
+prisma/dev.db
+
+# testRigor run reports
+testrigor/.run/
 
 # Nuxt.js build / generate output
 .nuxt
