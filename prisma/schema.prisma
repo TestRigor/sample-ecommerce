@@ -1,13 +1,15 @@
-// SQLite is used here so the app runs without a separate DB server.
-// Prisma enums and Json aren't supported on SQLite, so role/status/payment
-// are plain strings and address snapshots are JSON-stringified into String.
+// Postgres is used in production (Vercel serverless cannot host a file-based
+// SQLite database). The role/status/payment fields remain plain strings and
+// address snapshots stay JSON-stringified into String for compatibility with
+// the original SQLite schema — no data-shape migration is required.
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DATABASE_URL_UNPOOLED")
 }
 
 model User {
