@@ -1,0 +1,46 @@
+customSteps: |
+  // ── Scenario 4 ─────────────────────────────────────────────────────────
+  // A SIGNED-IN customer finds a product via the top search bar. Proves the
+  // search works in an authenticated session (the "logged in" precondition).
+  //
+  // There is no seeded customer account, so we first register a fresh account,
+  // then sign in through the login page to establish an explicit logged-in
+  // session before searching.
+
+  // --- Create a fresh account (unique email so it is truly new) ---
+  reset to home
+  click "Account"
+  click "Register"
+  generate unique email, then enter into "Email address" and save as "searchCustomerEmail"
+  enter stored value "newCustomerName" into "Full Name"
+  enter stored value "newCustomerPassword" into "Password"
+  click "Create account"
+  check that page contains "My Account"
+
+  // --- Prove login explicitly: sign out, then sign back in ---
+  click "Sign out (Logout)"
+  reset to home
+  click "Account"
+  click "Sign in"
+  enter stored value "searchCustomerEmail" into "Email address"
+  enter stored value "newCustomerPassword" into "Password"
+  click "Sign in"
+  check that page contains "My Account"
+
+  // --- While logged in, find a seeded product via the header search bar ---
+  enter stored value "checkoutProductName" into "Search"
+  enter enter into "Search"
+
+  // Results page echoes the query and lists the product
+  check that page contains string with parameters "Results for \"${checkoutProductName}\""
+  check that page contains stored value from "checkoutProductName"
+
+  // Open the PDP to confirm the search resolved to the real product
+  click stored value "checkoutProductName"
+  check that page contains stored value from "checkoutProductName"
+  check that page contains "Add to Cart"
+
+  // Consequence: session is still authenticated after searching
+  click "Account"
+  check that page contains "My Account"
+labels: [smoke, account, search, loggedin]
