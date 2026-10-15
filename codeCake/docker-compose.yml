@@ -1,0 +1,36 @@
+services:
+  main_app:
+    image: node:20
+    working_dir: /app
+    volumes:
+      - ../:/app
+      - node_modules:/app/node_modules
+    command: >
+      sh -c "npm ci
+      && npx prisma db push --skip-generate
+      && npm run db:seed
+      && npm run build
+      && npx next start -H 0.0.0.0 -p 3000"
+    ports:
+      - "3300:3000"
+    environment:
+      DATABASE_URL: postgresql://shop:shop@db:5432/shop
+      DATABASE_URL_UNPOOLED: postgresql://shop:shop@db:5432/shop
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: shop
+      POSTGRES_PASSWORD: shop
+      POSTGRES_DB: shop
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shop -d shop"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  node_modules:
