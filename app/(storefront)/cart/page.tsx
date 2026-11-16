@@ -1,13 +1,16 @@
 import Link from "next/link";
 import { getCartItems } from "@/lib/cart";
 import { formatUsd } from "@/lib/money";
-import { updateCartItemAction, removeCartItemAction } from "@/app/actions/cart";
+import { getAppliedDiscount, discountCents } from "@/lib/discounts";
+import { updateCartItemAction, removeCartItemAction, applyDiscountAction } from "@/app/actions/cart";
 
 export const dynamic = "force-dynamic";
 
 export default async function CartPage() {
   const items = await getCartItems();
   const subtotal = items.reduce((s, i) => s + i.product.priceCents * i.quantity, 0);
+  const discount = getAppliedDiscount();
+  const discountAmount = discount ? discountCents(subtotal, discount.percent) : 0;
 
   if (items.length === 0) {
     return (
@@ -66,7 +69,23 @@ export default async function CartPage() {
         </tbody>
       </table>
 
+      <form action={applyDiscountAction} style={{ display: "flex", gap: "0.5rem", alignItems: "flex-end" }}>
+        <label>
+          Discount code
+          <input type="text" name="discountCode" />
+        </label>
+        <button type="submit">Apply</button>
+      </form>
+
       <h2>Subtotal: {formatUsd(subtotal)}</h2>
+      {discount ? (
+        <>
+          <p>
+            Discount ({discount.code}, {discount.percent}% off): -{formatUsd(discountAmount)}
+          </p>
+          <h2>Total after discount: {formatUsd(subtotal - discountAmount)}</h2>
+        </>
+      ) : null}
       <Link className="btn" href="/checkout">
         Proceed to Checkout
       </Link>
